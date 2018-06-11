@@ -1,3 +1,9 @@
+---
+permalink: /fipe/
+header:
+  image: "/images/IMG_2046_1.JPG"
+---
+
 EDA: Brazilian Car Prices
 ================
 
