@@ -1,6 +1,6 @@
 ---
 title: "About"
-pemalink: /about/
+permalink: /about/
 header:
   image: "/images/IMG_2046.JPG"
 ---
