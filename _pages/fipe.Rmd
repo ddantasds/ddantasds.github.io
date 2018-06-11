@@ -19,8 +19,6 @@ library(grid)
 
 ### Read Data
 
-You can include R code in the document as follows:
-
 ```{r echo=TRUE}
 fipe <- fread("/home/ddantas/project/pre_git/FIPE/data/veiculos_preco_junho_de_2018.csv")
 ```
@@ -31,14 +29,12 @@ fipe<-fipe[,.("brand"=fipe_marca,"vehicle"=veiculo,"year_model"=ano_modelo,"fuel
 head(fipe)
 ```
 
-I believe the data is pretty simple and intuitive. Two important points here are: (1) prices are in real (Brazilian currency); (2) price_reference is the moment the price was **calculated, in this case it was June 2018.
+I believe the data is pretty simple and intuitive. Two important points here are: (1) prices are in real (Brazilian currency); (2) price_reference is the moment the price was calculated, in this case it was June 2018.
 
 This information is monthly released by FIPE, a Brazilian instute.
 
 
 ### Vehicles by brand
-
-You can also embed plots, for example:
 
 ```{r pressure, echo=TRUE}
 options(repr.plot.width=10, repr.plot.height=4)
@@ -69,4 +65,3 @@ ggplot(aes(x=reorder(brand,-count),y=count))+
 geom_col(aes(fill=as.factor(flag)))+xlab("")+ylab("")+guides(fill=FALSE)+
 theme_minimal()+theme(axis.text.x = element_text(angle=70,vjust = 0.7))
 ```
-
