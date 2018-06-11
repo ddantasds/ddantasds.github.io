@@ -1,4 +1,5 @@
 ---
+title: "EDA: Brazilian Car Prices"
 permalink: /fipe/
 header:
   image: "/images/IMG_2046_1.JPG"
@@ -102,8 +103,6 @@ theme_minimal()+xlab("log Price")+ylab("Year Model")+
 scale_fill_viridis(name = "Price", option = "C")
 ```
 
-    ## Picking joint bandwidth of 0.183
-
 ![](/_pages/fipe_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ### Create Transmission information
@@ -122,16 +121,19 @@ mutate(transmission=ifelse((grepl("Aut",vehicle) | grepl("Tipt",vehicle)),"Autom
 
 ``` r
 options(repr.plot.width=10, repr.plot.height=4)
-p1<-fipe%>%
+fipe%>%
 group_by(year_model,transmission)%>%
 summarise(total=n())%>%
 ggplot(aes(x = as.factor(year_model), y = total, fill = transmission))+
 geom_bar(stat = "identity")+
 theme_minimal()+xlab("Year Model")+ylab("# Vehicles")+
-theme(axis.text.x = element_text(angle=60))+
-guides(fill=FALSE)
+theme(axis.text.x = element_text(angle=60))
+```
 
-p2<-fipe%>%
+![](/_pages/fipe_files/figure-markdown_github/unnamed-chunk-9-1.png)
+
+``` r
+fipe%>%
 group_by(year_model,transmission)%>%
 summarise(count=n())%>%
 group_by(year_model)%>%
@@ -140,11 +142,9 @@ ggplot(aes(x = as.factor(year_model), y = perc, fill = transmission))+
 geom_bar(stat = "identity")+
 theme_minimal()+xlab("Year Model")+ylab("% Vehicles Transmission")+
 theme(axis.text.x = element_text(angle=60))
-
-grid.arrange(p1,p2,ncol=2)
 ```
 
-![](/_pages/fipe_files/figure-markdown_github/unnamed-chunk-9-1.png)
+![](/_pages/fipe_files/figure-markdown_github/unnamed-chunk-9-2.png)
 
 Opposite to the US market the majority of cars in Brazil are manual. However, the automatic car is becoming more popular and increasing its share by year model.
 
@@ -169,10 +169,6 @@ geom_vline(xintercept = c(10,12,14),lty=2,colour="navy")+
 theme_minimal()+xlab("log Price")+ylab("Year Model")+
 facet_wrap(~transmission)
 ```
-
-    ## Picking joint bandwidth of 0.179
-
-    ## Picking joint bandwidth of 0.188
 
 ![](/_pages/fipe_files/figure-markdown_github/unnamed-chunk-11-1.png)
 
@@ -243,8 +239,6 @@ geom_density_ridges_gradient(scale=2,rel_min_height = 0.01, alpha=0.6)+
 theme_minimal()+xlab("log Price")+ylab("Year Model")
 ```
 
-    ## Picking joint bandwidth of 0.145
-
 ![](/_pages/fipe_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 ### Model
@@ -268,8 +262,8 @@ mutate(est_price=predict(model,.))%>%
 group_by(year_model2)%>%
 summarise(price=mean(price2),est_price=mean(exp(est_price)))%>%
 ggplot()+
-geom_line(aes(x=year_model2,y=price),colour="navy")+
-geom_line(aes(x=year_model2,y=est_price),colour="orange")+
+geom_line(aes(x=as.numeric(year_model2),y=price),colour="navy")+
+geom_line(aes(x=as.numeric(year_model2),y=est_price),colour="orange")+
 theme_minimal()+xlab("Year Model")+ylab("Price")
 
 p2<-fipe%>%
@@ -292,11 +286,6 @@ theme_minimal()+xlab("Fuel")+ylab("Price")
 
 grid.arrange(p1,p2,p3,ncol=2)
 ```
-
-    ## geom_path: Each group consists of only one observation. Do you need to
-    ## adjust the group aesthetic?
-    ## geom_path: Each group consists of only one observation. Do you need to
-    ## adjust the group aesthetic?
 
 ![](/_pages/fipe_files/figure-markdown_github/unnamed-chunk-17-1.png)
 

@@ -101,7 +101,7 @@ theme_minimal()
 
 ### Price by Ano Modelo
 
-```{r}
+```{r, message=FALSE}
 options(repr.plot.width=10, repr.plot.height=6)
 fipe%>%
 #filter(brand=="VW - VolksWagen")%>%
@@ -127,16 +127,15 @@ mutate(transmission=ifelse((grepl("Aut",vehicle) | grepl("Tipt",vehicle)),"Autom
 
 ```{r}
 options(repr.plot.width=10, repr.plot.height=4)
-p1<-fipe%>%
+fipe%>%
 group_by(year_model,transmission)%>%
 summarise(total=n())%>%
 ggplot(aes(x = as.factor(year_model), y = total, fill = transmission))+
 geom_bar(stat = "identity")+
 theme_minimal()+xlab("Year Model")+ylab("# Vehicles")+
-theme(axis.text.x = element_text(angle=60))+
-guides(fill=FALSE)
+theme(axis.text.x = element_text(angle=60))
 
-p2<-fipe%>%
+fipe%>%
 group_by(year_model,transmission)%>%
 summarise(count=n())%>%
 group_by(year_model)%>%
@@ -145,8 +144,6 @@ ggplot(aes(x = as.factor(year_model), y = perc, fill = transmission))+
 geom_bar(stat = "identity")+
 theme_minimal()+xlab("Year Model")+ylab("% Vehicles Transmission")+
 theme(axis.text.x = element_text(angle=60))
-
-grid.arrange(p1,p2,ncol=2)
 ```
 
 Opposite to the US market the majority of cars in Brazil are manual. However, the automatic car is becoming more popular and increasing its share by year model.
@@ -161,7 +158,7 @@ theme_minimal()+xlab("log Price")
 
 Although it is clear there is a price difference between type of transmission, we should take year model into consideration because the distrbution of transmission is different through the the year model.
 
-```{r}
+```{r, message=FALSE}
 options(repr.plot.width=10, repr.plot.height=10)
 ggplot(fipe,aes(x=log(price2),y=as.factor(year_model),fill=transmission))+
 #geom_density(alpha=0.7)+
@@ -216,7 +213,7 @@ group_by(transmission,fuel)%>%
 summarise(count=n())
 ```
 
-```{r}
+```{r, message=FALSE}
 options(repr.plot.width=10, repr.plot.height=10)
 filter(fipe,fuel%in%c('Gasoline','Diesel'))%>%
 ggplot(aes(x=log(price2),y=as.factor(year_model),fill=fuel))+
@@ -245,8 +242,8 @@ mutate(est_price=predict(model,.))%>%
 group_by(year_model2)%>%
 summarise(price=mean(price2),est_price=mean(exp(est_price)))%>%
 ggplot()+
-geom_line(aes(x=year_model2,y=price),colour="navy")+
-geom_line(aes(x=year_model2,y=est_price),colour="orange")+
+geom_line(aes(x=as.numeric(year_model2),y=price),colour="navy")+
+geom_line(aes(x=as.numeric(year_model2),y=est_price),colour="orange")+
 theme_minimal()+xlab("Year Model")+ylab("Price")
 
 p2<-fipe%>%
