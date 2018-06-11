@@ -7,7 +7,6 @@ header:
   image: "/images/IMG_2046_1.JPG"
 ---
 
-EDA: Brazilian Car Prices
 ================
 
 GitHub Documents
@@ -25,6 +24,6 @@ Including Plots
 
 You can also embed plots, for example:
 
-![](fipe_files/figure-markdown_github/pressure-1.png)
+![](/_pages/fipe_files/figure-markdown_github/pressure-1.png)
 
 Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
