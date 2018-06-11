@@ -42,7 +42,7 @@ geom_col(aes(fill=as.factor(flag)))+xlab("")+ylab("")+guides(fill=FALSE)+
 theme_minimal()+theme(axis.text.x = element_text(angle=70,vjust = 0.7))
 ```
 
-![](fipe_files/figure-markdown_github/pressure-1.png)
+![](/_pages/fipe_files/figure-markdown_github/pressure-1.png)
 
 **VW**, **GM - Chevrolet**, **Fiat** and **Ford** are the top 4 brands of with more than 2,000 vehicles each.
 
@@ -61,4 +61,4 @@ geom_col(aes(fill=as.factor(flag)))+xlab("")+ylab("")+guides(fill=FALSE)+
 theme_minimal()+theme(axis.text.x = element_text(angle=70,vjust = 0.7))
 ```
 
-![](fipe_files/figure-markdown_github/unnamed-chunk-3-1.png)
+![](/figure-markdown_github/unnamed-chunk-3-1.png)
