@@ -1,3 +1,14 @@
+
+
+---
+layout: archive
+permalink: /fipe/
+title: "EDA: Brazilian Car Prices"
+author_profile: true
+header:
+  image: "/images/IMG_2046_1.JPG"
+---
+
 EDA: Brazilian Car Prices
 ================
 
