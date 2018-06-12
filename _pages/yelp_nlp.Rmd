@@ -1,0 +1,124 @@
+---
+title: "Yelp - NLP"
+output: github_document
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(data.table)
+library(ggplot2)
+library(dplyr)
+library(reshape2)
+
+yelp <- fread("/media/ddantas/OS/udemy/PythonDataScience/Python-Data-Science-and-Machine-Learning-Bootcamp/Machine Learning Sections/Natural-Language-Processing/yelp.csv")
+```
+
+## Yelp Data Set
+
+```{r}
+head(yelp)
+```
+
+```{r}
+yelp%>%
+  group_by(stars)%>%
+  summarise(total=n())%>%
+  ggplot(aes(x=stars,y=total))+
+  geom_col(fill="navy")+theme_minimal()+xlab("# Ratings")+ylab("Stars")
+```
+
+### Reviews
+```{r}
+yelp[23:25,text]
+```
+
+Create a review length variable
+
+```{r, message=FALSE}
+yelp[,review_len:=nchar(text)]
+
+ggplot(yelp,aes(x=review_len))+
+  geom_histogram(fill="navy")+theme_minimal()+xlab("Review Length")
+```
+
+### Very Short Reviews
+```{r}
+yelp[review_len<15,text]
+```
+
+### The Longest Review
+```{r}
+cat(yelp[review_len==5003,text])
+```
+
+```{r}
+yelp%>%
+ggplot(aes(x=log(review_len), group=as.factor(stars)))+
+  geom_density(aes(fill=as.factor(stars)),alpha=0.6)+
+  theme_minimal()+guides(fill=guide_legend(title="Stars"))+xlab("log Review Length")
+
+yelp[stars%in%c(1,5)]%>%
+ggplot(aes(x=log(review_len), group=as.factor(stars)))+
+  geom_density(aes(fill=as.factor(stars)),alpha=0.6)+
+  theme_minimal()+guides(fill=guide_legend(title="Stars"))+xlab("log Review Length")
+```
+
+It seems that longer text have a slightly tendency to be a 1 star review. But I don't think it would be useful. Let's see though.
+
+
+### Text analysis
+
+Let's start very simple. Only analyzing the presence of word "good".
+
+```{r, message=TRUE}
+yelp[,good:=grepl("good", text,ignore.case = TRUE)]
+
+yelp%>%
+  group_by(good)%>%
+  summarise(total=n())
+
+dcast(yelp%>%
+  group_by(stars)%>%
+  mutate(total_stars=n())%>%
+  group_by(stars,good)%>%
+  summarise(total=round(100*n()/mean(total_stars),2)),formula = stars~good)%>%
+  rename(`Stars \\ Word Good`=stars)
+
+
+dcast(yelp%>%
+  group_by(good)%>%
+  mutate(total_good=n())%>%
+  group_by(good,stars)%>%
+  summarise(total=round(100*n()/mean(total_good),2)),formula = good~stars)%>%
+  rename(`Word Good \\ Stars`=good)
+```
+
+### Text processing
+
+* Remove punctuation and *stopwords*.
+
+```{r}
+library(tm)
+library(stopwords)
+library(purrr)
+
+# Remove punctuation
+yelp[,text2:=tolower(gsub("[[:punct:]]","",text))]
+
+
+
+# Remove stopwords
+t<-unlist(
+  map(
+    as.list(yelp[,text2]),
+    ~tm_map(Corpus(VectorSource(.x)),removeWords,stopwords())[[1]]$content
+    )
+)
+
+yelp[,text2:=t]
+
+head(yelp[,.(text,text2)])
+```
+
+
