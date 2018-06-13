@@ -1,10 +1,20 @@
 ---
-title: "Posts"
+layout: archive
 permalink: /posts/
+title: "Posts"
+author_profile: true
 header:
   image: "/images/IMG_2046_1.JPG"
 ---
 
-* [EDA: Brazilian Car Prices](https://ddantasds.github.io/fipe/)
-* [Yelp: NLP to predict stars rating](https://ddantasds.github.io/yelp_nlp/)
-* [Shiny App: Dashboard for Soybean in Brazil Parana State](https://cloud.smartcampo.com/tools/shiny/soybean/soybean_PR/)
+
+{% include base_path %}
+{% include group-by-array collection=site.posts field="tags" %}
+
+{% for tag in group_names %}
+  {% assign posts = group_items[forloop.index0] %}
+  <h2 id="{{ tag | slugify }}" class="archive__subtitle">{{ tag }}</h2>
+  {% for post in posts %}
+    {% include archive-single.html %}
+  {% endfor %}
+{% endfor %}
