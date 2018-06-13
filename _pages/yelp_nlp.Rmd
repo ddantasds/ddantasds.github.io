@@ -122,3 +122,26 @@ head(yelp[,.(text,text2)])
 ```
 
 
+
+```{r}
+review_source <- VectorSource(yelp$text2)
+
+review_corpus <- VCorpus(review_source)
+
+review_corpus[[1]]
+review_corpus[[1]][1]
+
+
+```
+
+
+
+```{r}
+# Create the dtm from the corpus: 
+review_dtm <- DocumentTermMatrix(review_corpus)
+
+review_m<-as.matrix(review_dtm)
+
+review_m[1:2,100:105]
+```
+
