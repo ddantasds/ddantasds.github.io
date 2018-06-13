@@ -3,7 +3,8 @@ title: "Yelp - NLP"
 output: github_document
 ---
 
-```{r setup, include=FALSE, message=FALSE}
+
+```{r setup, include=TRUE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
 library(data.table)
@@ -17,8 +18,12 @@ yelp <- fread("/media/ddantas/OS/udemy/PythonDataScience/Python-Data-Science-and
 ## Yelp Data Set
 
 ```{r}
-head(yelp)
+str(yelp)
 ```
+
+The dataset contains information to identify the review and also the number of stars given by the customer. We also have the review text.
+
+### Rating Distribution
 
 ```{r}
 yelp%>%
@@ -28,12 +33,17 @@ yelp%>%
   geom_col(fill="navy")+theme_minimal()+xlab("# Ratings")+ylab("Stars")
 ```
 
+Most of the reviews were 4 or 5 stars.
+
 ### Reviews
+
+Below 3 examples of reviews.
+
 ```{r}
 yelp[23:25,text]
 ```
 
-Create a review length variable
+How long are these reviews?
 
 ```{r, message=FALSE}
 yelp[,review_len:=nchar(text)]
@@ -42,7 +52,12 @@ ggplot(yelp,aes(x=review_len))+
   geom_histogram(fill="navy")+theme_minimal()+xlab("Review Length")
 ```
 
+Most of them are lower than 1k characters.
+
 ### Very Short Reviews
+
+Example of very short reviews. I belive we can still get good information from these.
+
 ```{r}
 yelp[review_len<15,text]
 ```
