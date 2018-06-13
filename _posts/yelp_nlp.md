@@ -41,7 +41,7 @@ yelp%>%
   geom_col(fill="navy")+theme_minimal()+xlab("# Ratings")+ylab("Stars")
 ```
 
-![](/_pages/yelp_nlp_files/figure-markdown_github/unnamed-chunk-2-1.png)
+![](/_posts/yelp_nlp_files/figure-markdown_github/unnamed-chunk-2-1.png)
 
 ### Reviews
 
@@ -62,7 +62,7 @@ ggplot(yelp,aes(x=review_len))+
   geom_histogram(fill="navy")+theme_minimal()+xlab("Review Length")
 ```
 
-![](/_pages/yelp_nlp_files/figure-markdown_github/unnamed-chunk-4-1.png)
+![](/_posts/yelp_nlp_files/figure-markdown_github/unnamed-chunk-4-1.png)
 
 ### Very Short Reviews
 
@@ -117,7 +117,7 @@ ggplot(aes(x=log(review_len), group=as.factor(stars)))+
   theme_minimal()+guides(fill=guide_legend(title="Stars"))+xlab("log Review Length")
 ```
 
-![](/_pages/yelp_nlp_files/figure-markdown_github/unnamed-chunk-7-1.png)
+![](/_posts/yelp_nlp_files/figure-markdown_github/unnamed-chunk-7-1.png)
 
 ``` r
 yelp[stars%in%c(1,5)]%>%
@@ -126,7 +126,7 @@ ggplot(aes(x=log(review_len), group=as.factor(stars)))+
   theme_minimal()+guides(fill=guide_legend(title="Stars"))+xlab("log Review Length")
 ```
 
-![](/_pages/yelp_nlp_files/figure-markdown_github/unnamed-chunk-7-2.png)
+![](/_posts/yelp_nlp_files/figure-markdown_github/unnamed-chunk-7-2.png)
 
 It seems that longer text have a slightly tendency to be a 1 star review. But I don't think it would be useful. Let's see though.
 

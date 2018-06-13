@@ -138,7 +138,8 @@ review_corpus[[1]][1]
 
 ```{r}
 # Create the dtm from the corpus: 
-review_dtm <- DocumentTermMatrix(review_corpus)
+review_dtm <- DocumentTermMatrix(review_corpus,
+                                 control = list(weighting = function(x) weightTfIdf(x, normalize = FALSE)))
 
 review_m<-as.matrix(review_dtm)
 
