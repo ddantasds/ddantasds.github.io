@@ -1,9 +1,8 @@
 ---
-title: "Yelp: NLP to predict stars rating"
-permalink: /yelp_nlp/
+title: "Yelp: NLP for Stars Rating"
+date: 2018-04-05
 header:
   image: "/images/IMG_2046_1.JPG"
-mathjax: "true"
 ---
 
 ## Yelp Data Set
