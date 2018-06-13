@@ -3,6 +3,7 @@ title: "Yelp: NLP to predict stars rating"
 permalink: /yelp_nlp/
 header:
   image: "/images/IMG_2046_1.JPG"
+mathjax: "true"
 ---
 
 ## Yelp Data Set
