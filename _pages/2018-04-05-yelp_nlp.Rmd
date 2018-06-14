@@ -11,17 +11,21 @@ library(data.table)
 library(ggplot2)
 library(dplyr)
 library(reshape2)
+library(ggridges)
+library(tm)
+library(stopwords)
+library(purrr)
 
 yelp <- fread("/media/ddantas/OS/udemy/PythonDataScience/Python-Data-Science-and-Machine-Learning-Bootcamp/Machine Learning Sections/Natural-Language-Processing/yelp.csv")
 ```
 
 ## Yelp Data Set
 
+This dataset contains reviews information such as the rating, date of review and the text.
+
 ```{r}
 str(yelp)
 ```
-
-The dataset contains information to identify the review and also the number of stars given by the customer. We also have the review text.
 
 ### Rating Distribution
 
@@ -56,30 +60,67 @@ Most of them are lower than 1k characters.
 
 ### Very Short Reviews
 
-Example of very short reviews. I belive we can still get good information from these.
+Example of very short reviews.
 
 ```{r}
 yelp[review_len<15,text]
 ```
 
+Some of them are very useful though. Sometimes is better to read 'No good' or 'Excellent' than those long texts.
+
 ### The Longest Review
+
+In this dataset the longest review have 5,003 characters. Feel free to read :p
+
 ```{r}
 cat(yelp[review_len==5003,text])
 ```
 
-```{r}
+### The Length by Rating
+
+```{r, message=FALSE}
+# yelp%>%
+# ggplot(aes(x=log(review_len), group=as.factor(stars)))+
+#   geom_density(aes(fill=as.factor(stars)),alpha=0.6)+
+#   theme_minimal()+guides(fill=guide_legend(title="Stars"))+xlab("log Review Length")
+
 yelp%>%
-ggplot(aes(x=log(review_len), group=as.factor(stars)))+
-  geom_density(aes(fill=as.factor(stars)),alpha=0.6)+
-  theme_minimal()+guides(fill=guide_legend(title="Stars"))+xlab("log Review Length")
+ggplot(aes(x=log(review_len), y=as.factor(stars)))+
+  geom_density_ridges(rel_min_height = 0.01,aes(fill=as.factor(stars)))+
+  geom_vline(xintercept = 6.25, lty=2, colour="red")+
+  theme_minimal()+ylab("Stars")+xlab("log Review Length")+guides(fill=FALSE)
 
 yelp[stars%in%c(1,5)]%>%
 ggplot(aes(x=log(review_len), group=as.factor(stars)))+
   geom_density(aes(fill=as.factor(stars)),alpha=0.6)+
   theme_minimal()+guides(fill=guide_legend(title="Stars"))+xlab("log Review Length")
+
+
 ```
 
+It seems that 5 stars ratings tend to have slightly less characters than others.
+
 It seems that longer text have a slightly tendency to be a 1 star review. But I don't think it would be useful. Let's see though.
+
+### Text processing
+
+* Convert letters to lowercase. 
+* Remove punctuation and *stopwords*.
+
+```{r}
+# Remove punctuation
+yelp[,text2:=tolower(gsub("[[:punct:]]","",text))]
+
+# Remove stopwords
+t<-unlist(
+  map(
+    as.list(yelp[,text2]),
+    ~tm_map(Corpus(VectorSource(.x)),removeWords,stopwords())[[1]]$content
+    )
+)
+
+yelp[,text2:=t]
+```
 
 
 ### Text analysis
@@ -109,55 +150,5 @@ dcast(yelp%>%
   rename(`Word Good \\ Stars`=good)
 ```
 
-### Text processing
 
-* Remove punctuation and *stopwords*.
-
-```{r}
-library(tm)
-library(stopwords)
-library(purrr)
-
-# Remove punctuation
-yelp[,text2:=tolower(gsub("[[:punct:]]","",text))]
-
-
-
-# Remove stopwords
-t<-unlist(
-  map(
-    as.list(yelp[,text2]),
-    ~tm_map(Corpus(VectorSource(.x)),removeWords,stopwords())[[1]]$content
-    )
-)
-
-yelp[,text2:=t]
-
-head(yelp[,.(text,text2)])
-```
-
-
-
-```{r}
-review_source <- VectorSource(yelp$text2)
-
-review_corpus <- VCorpus(review_source)
-
-review_corpus[[1]]
-review_corpus[[1]][1]
-
-
-```
-
-
-
-```{r}
-# Create the dtm from the corpus: 
-review_dtm <- DocumentTermMatrix(review_corpus,
-                                 control = list(weighting = function(x) weightTfIdf(x, normalize = FALSE)))
-
-review_m<-as.matrix(review_dtm)
-
-review_m[1:2,100:105]
-```
 
