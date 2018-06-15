@@ -113,14 +113,16 @@ t<-unlist(
 )
 
 yelp[,text2:=t]
+```
 
-
+```{r, echo=FALSE}
 yelp[78,text]
 yelp[78,text2]
 ```
 
 
-### Prepare dataset to predict 1 or 5 stars based on text
+
+### Prepare dataset to predict 1 or 5 stars based on review text
 
 Create dataset with **term frequency-inverse document frequency** (TF-IDF).
 
@@ -134,7 +136,7 @@ df_dtm_tfidf<-DocumentTermMatrix(df_corpus, control = list(weighting = function(
 
 df_dtm_tfidf = removeSparseTerms(df_dtm_tfidf, 0.99)
 
-inspect(df_dtm_tfidf[10:20, 10:20])
+inspect(df_dtm_tfidf[15:20, 10:12])
 ```
 
 Each column represent a word, and row the document. The value zero means the word is not presented on that review. Values greater than zero are the TF-IDF:
@@ -179,21 +181,24 @@ The word '**place**' is the most mentioned word with 2,469 appearances.
 ### Model - XGBoost using H2O framework
 ```{r, results="hide", message=FALSE, warning=FALSE}
 
-# Create data fram
+# Create dataset with tf-idf for each review and the rating stars.
 df_words <- data.frame(as.matrix(df_dtm_tfidf),rating_stars=df$stars)
 
 # Initialize H2O cluster
 h2o.init()
 
+# 
 df_words_h2o <- as.h2o(df_words)
 df_words_h2o$rating_stars<-as.factor(df_words_h2o$rating_stars)
 
+# Split into training and test dataset
 split<-h2o.splitFrame(data=df_words_h2o, ratios=0.75)
 
-# Names
+# Define features and target variables.
 features<-names(df_words_h2o)[1:(ncol(df_words_h2o)-1)]
 target<-names(df_words_h2o)[ncol(df_words_h2o)]
 
+# Modeling
 model <- h2o.xgboost(
   x=features,
   y=target,
@@ -245,9 +250,9 @@ model <- h2o.xgboost(
 )
 ```
 
-Evaluate model with 150 trees.
+Evaluate the model with 150 trees. Confusion matrix:
 
-```{r}
+```{r, message=FALSE, echo=FALSE}
 split[[2]]$predicted <- h2o.predict(model,split[[2]])$predict
 
 t <- table(as.data.frame(split[[2]][,c(ncol(split[[2]])-1,ncol(split[[2]]))]))
