@@ -145,13 +145,15 @@ $$W_{i,j} = T_{i,j} * log(\frac{N}{df_i})$$
 
 $T_{i,j}$: Number of times the term $i$ is presented in the review $j$.
 
+
 $N$: Number of reviews.
+
 
 $df_{i}$: Number of reviews where the term $i$ is presented.
 
 Example:
 
-The term **'wallet'** appears 3 times in the review **101**. We have 10,000 reviews and 100 of them have the word **'wallet'** then:
+The term **'wallet'** appears 3 times in the review **101**. There are 10,000 reviews and 100 of them have the word **'wallet'** then:
 
 $$W_{wallet,101}=T_{wallet,101}*log(\frac{N}{df_{wallet}})$$
 $$W_{wallet,101}=3*log(\frac{10,000}{100})$$
