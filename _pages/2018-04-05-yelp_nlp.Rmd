@@ -156,11 +156,13 @@ Example:
 The term **'wallet'** appears 3 times in the review **101**. There are 10,000 reviews and 100 of them have the word **'wallet'** then:
 
 $$W_{wallet,101}=T_{wallet,101}*log(\frac{N}{df_{wallet}})$$
+
 $$W_{wallet,101}=3*log(\frac{10,000}{100})$$
+
 $$W_{wallet,101}=3*2=6$$
 
 
-### Most used terms
+### Distribution of amount terms
 
 ```{r}
 df_dtm_tf<-removeSparseTerms(DocumentTermMatrix(df_corpus),0.99)
@@ -171,10 +173,16 @@ freq%>%
   ggplot(aes(log(count)))+
   geom_density(fill="navy",alpha=0.6)+
   theme_minimal()
+```
 
-freq%>%
-  filter(count>=quantile(count,0.99))%>%
-  arrange(desc(count))%>%rename(mentions=count)
+### Most used terms
+
+```{r}
+knitr::kable(
+  freq%>%
+    filter(count>=quantile(count,0.99))%>%
+    arrange(desc(count))%>%rename(mentions=count)
+  )
 ```
 
 The word '**place**' is the most mentioned word with 2,469 appearances.
@@ -254,11 +262,13 @@ model <- h2o.xgboost(
 
 Evaluate the model with 150 trees. Confusion matrix:
 
-```{r, message=FALSE, echo=FALSE}
+```{r, message=FALSE, echo=FALSE, results="hide"}
 split[[2]]$predicted <- h2o.predict(model,split[[2]])$predict
 
 t <- table(as.data.frame(split[[2]][,c(ncol(split[[2]])-1,ncol(split[[2]]))]))
+```
 
+```{r, echo=FALSE}
 t
 ```
 
