@@ -17,6 +17,8 @@ library(gridExtra)
 library(grid)
 ```
 
+This post is an analysis of a car price dataset from Brazil. The idea is to work with the available data to identify information that lead to price variability.
+
 ### Read Data
 
 ```{r echo=TRUE}
@@ -27,7 +29,7 @@ fipe<-fipe[,fuel:=ifelse(combustivel=="Gasolina","Gasoline",
                                                                                                                                                   ifelse(combustivel=="Álcool","Alcohol",
                                                                                                                                                          ifelse(combustivel=="Diesel","Diesel",combustivel)))][,.("brand"=fipe_marca,"vehicle"=veiculo,"year_model"=ano_modelo,fuel,"price_reference"="June 2018",price)]
 
-head(fipe)
+knitr::kable(head(fipe))
 ```
 
 I believe the data is pretty simple and intuitive. Two important points here are: (1) prices are in real (Brazilian currency); (2) price_reference is the moment the price was calculated, in this case it was June 2018.
@@ -99,7 +101,7 @@ geom_density(fill="navy",colour="gray",alpha=0.4)+xlab("log Price")+
 theme_minimal()
 ```
 
-### Price by Ano Modelo
+### Price by Year Model
 
 ```{r, message=FALSE}
 options(repr.plot.width=10, repr.plot.height=6)
@@ -156,12 +158,11 @@ geom_density(alpha=0.6)+
 theme_minimal()+xlab("log Price")
 ```
 
-Although it is clear there is a price difference between type of transmission, we should take year model into consideration because the distrbution of transmission is different through the the year model.
+Although it is clear there is a price difference between type of transmission, we must take year model into consideration. The majority of automatic transmission are high year model which helps to increase its value.
 
 ```{r, message=FALSE}
 options(repr.plot.width=10, repr.plot.height=10)
 ggplot(fipe,aes(x=log(price2),y=as.factor(year_model),fill=transmission))+
-#geom_density(alpha=0.7)+
 geom_density_ridges_gradient(scale=2,rel_min_height = 0.01, alpha=0.6)+
 geom_vline(xintercept = c(10,12,14),lty=2,colour="navy")+
 theme_minimal()+xlab("log Price")+ylab("Year Model")+
@@ -208,9 +209,11 @@ Diesel is very common for trucks and heavy vehicles which usually have a higher 
 This could help to explain the peaks in the price distribution by year model. Specially for the manual vehicles which have more than 85% of the diesel cars.
 
 ```{r}
-fipe%>%
-group_by(transmission,fuel)%>%
-summarise(count=n())
+knitr::kable(
+  fipe%>%
+    group_by(transmission,fuel)%>%
+    summarise(count=n())
+  )
 ```
 
 ```{r, message=FALSE}
