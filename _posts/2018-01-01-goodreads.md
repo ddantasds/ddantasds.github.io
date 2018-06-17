@@ -1,6 +1,6 @@
 ---
 title: "Good Reads: Recommender System"
-date: 2018-04-05
+date: 2018-01-01
 tags: [.]
 header:
   image: "/images/IMG_2046_1.JPG"
