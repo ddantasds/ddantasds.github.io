@@ -3,7 +3,7 @@ title: "Yelp - NLP"
 output: github_document
 ---
 
-In this post I apply some natural language processing techniques in a Yelp dataset containing reviews from users. The idea is to work with text format data and extract meaningful information from it.
+In this post I apply some natural language processing (NLP) techniques to a Yelp dataset containing reviews from users. The idea is to work with text format data and extract meaningful information from it.
 
 ```{r setup, include=TRUE, message=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -26,7 +26,9 @@ yelp <- fread("/media/ddantas/OS/udemy/PythonDataScience/Python-Data-Science-and
 This dataset contains reviews information such as the rating, date of review and the text.
 
 ```{r}
-str(yelp)
+knitr::kable(
+  head(yelp)
+)
 ```
 
 ### Rating Distribution
