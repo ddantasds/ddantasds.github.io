@@ -4,7 +4,7 @@ date: 2018-01-01
 tags: [.]
 header:
   image: "/images/IMG_2046_1.JPG"
-excerpt: "EDA, NLP, Yelp, Data Science"
+excerpt: "EDA, Recommender System, Goodreads, Data Science"
 mathjax: "true"
 ---
 

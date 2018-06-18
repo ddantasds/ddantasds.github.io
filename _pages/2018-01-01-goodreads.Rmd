@@ -69,7 +69,9 @@ duplicated_ratings<-ratings%>%
     filter(total>1)%>%
     arrange(desc(total))
 
-head(duplicated_ratings)
+knitr::kable(
+  head(duplicated_ratings)
+)
 ```
 
 The duplicated cases were removed.
