@@ -83,7 +83,7 @@ cat(' Number of ratings: ',format(nrow(ratings),big.mark=",",scientific=FALSE),'
     'Number of Users: ',format(length(unique(ratings$user_id)),big.mark=",",scientific=FALSE))
 ```
 
-For this problem, I decided to work with books that have atleast 100 reviews, and user who gave more than 20 reviews. Doing that I am significantly reducing reducing the number books and users. It helped me to reduce process time consumption.
+For this problem, I decided to work with books that have atleast 100 reviews, and user who gave more than 20 reviews. Doing that I am significantly reducing the number of books and users. It helped me to reduce process time consumption.
 
 ```{r}
 ratings<-ratings%>%group_by(user_id)%>%mutate(total=n())%>%filter(total>20)
@@ -98,4 +98,51 @@ Now, we have 9,806,160 combinatations of (**book**, **user**), and only 145,600 
 ## EDA: Understanding more about our data
 
 ### What's the most reviewed book?
+
+```{r}
+as.character(books[books$ratings_count==max(books$ratings_count),"original_title"])
+```
+
+![](https://images.gr-assets.com/books/1447303603m/2767052.jpg)
+
+### Which books has the highest average rating?
+```{r}
+as.character(books[books$average_rating==max(books$average_rating),"original_title"])
+```
+
+![title](https://images.gr-assets.com/books/1473064526m/24812.jpg)
+
+The Complete Calvin and Hobbes - Bill Watterson have **4.82** stars on average with 28,900 ratings.
+
+### How is the rating distribution?
+
+```{r}
+ratings%>%
+ggplot(aes(factor(rating)))+
+geom_bar(fill="orange",col="navy")+xlab("Stars")+ylab("")+theme_minimal()
+```
+
+Most of ratings are between 4-5 stars. Rarely a reader rate it as 1-2 star.
+
+### Number of ratings by user
+
+```{r}
+ratings%>%group_by(user_id)%>%summarise(total=n())%>%
+ggplot(aes(total))+
+geom_histogram(bins=25,fill="orange",col="navy")+theme_minimal()+xlab("Ratings by user")+ylab("")
+```
+
+As we can see, most of the users do not have many ratings but we stil can find some with more than 100.
+
+### Rating average by user (for users with more than 20 reviews).
+
+
+```{r}
+ratings%>%group_by(user_id)%>%summarise(rating=mean(rating),total=n())%>%
+  filter(total>=20)%>%
+  ggplot(aes(rating))+
+  geom_histogram(bins=30,fill="orange",col="navy")+theme_minimal()+xlab("Mean of rating by user")+ylab("")
+```
+
+Interesting to see some users with more than 20 reviews and a average rating lower than 2. It seems that they just read bad books.
 
