@@ -7,7 +7,7 @@ header:
 excerpt: "NBA, Genetic Algorithm, Data Science"
 ---
 
-![](/images/62-62559_nba_2017_2018_realbig_logo_collection_pdp.jpg)
+![](/images/2018-06-20-NBACalendar_files/62-62559_nba_2017_2018_realbig_logo_collection_pdp.jpg)
 
 Overview
 ========
@@ -299,7 +299,7 @@ options(repr.plot.width=20, repr.plot.height=16)
 nbaRouteMap(calendar,"Philadelphia 76ers")
 ```
 
-![](2018-06-20_NBACalendar_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 The blue numbers on the map represent the order of the games. The concentration of number on the bottom right are the home games.
 
@@ -333,7 +333,7 @@ labs(y="Distance (km)")+
                            size=8, angle=45, hjust=1))
 ```
 
-![](2018-06-20_NBACalendar_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 Interesting to see that both team that made NBA final are on the extrems. Coincidence?!? Yes, there is no correlation :P
 
