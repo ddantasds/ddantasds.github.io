@@ -14,7 +14,7 @@ Overview
 
 As you might know (or not), NBA is the men's professional basketball league in US. It contains 30 teams located around US and Canada (actually there is only one team in Canada) disputing the national title every year. If you have no idea about what I am saying maybe names such as Michael Jordan, Kobe Bryant, and Stephen Curry could help you. If still it does not sounds familiar this post probably will not be as delight as it is for me, but no problem we can still learn something from here.
 
-The Championship is divided in two phases. First, these 30 teams play against each other during what is called the regular season. In the end of the regular season the best 8 teams from each conference (East and West) advance to the Playoffs where they dispute to be the Champion.
+The tournament is divided in two phases. First, these 30 teams play against each other during what is called the regular season. In the end of the regular season the best 8 teams from each conference (East and West) advance to the Playoffs where they dispute to be the Champion.
 
 For my application, I will only focus on the regular season, when every team are playing against each other to go to the Playoffs. During this period each team plays 82 games usually between October and April. Half of the 82 games are palyed at home and the other half is played away. It is very common for teams, during the regular season, have a sequence with more than one game away before playing at home, meaning they have to travel and stay away for more than one game.
 
@@ -191,8 +191,8 @@ cities<-unique(calendar$home_location)
 pos<-geocode(cities)
 citiesLocation<-data.frame(cities,pos)
 
-while(length(which(is.na(pos$lon)))>0){
- citiesLocation[which(is.na(pos$lon)),c("lon","lat")]<-geocode(cities[which(is.na(pos$lon))])
+while(length(which(is.na(citiesLocation$lon)))>0){
+ citiesLocation[which(is.na(citiesLocation$lon)),c("lon","lat")]<-geocode(cities[which(is.na(citiesLocation$lon))])
 }
 
 knitr::kable(head(citiesLocation))
@@ -366,13 +366,13 @@ filter(home=="Philadelphia 76ers" | visitor=="Philadelphia 76ers")%>%
 head()
 ```
 
-    ##                 home              visitor
-    ## 1    Toronto Raptors   Philadelphia 76ers
-    ## 2 Philadelphia 76ers      Detroit Pistons
-    ## 3    Detroit Pistons   Philadelphia 76ers
-    ## 4   Sacramento Kings   Philadelphia 76ers
-    ## 5  San Antonio Spurs   Philadelphia 76ers
-    ## 6 Philadelphia 76ers Los Angeles Clippers
+    ##                  home            visitor
+    ## 1 Cleveland Cavaliers Philadelphia 76ers
+    ## 2  Philadelphia 76ers    New York Knicks
+    ## 3      Indiana Pacers Philadelphia 76ers
+    ## 4  Philadelphia 76ers     Denver Nuggets
+    ## 5  Philadelphia 76ers      Chicago Bulls
+    ## 6  Philadelphia 76ers      Atlanta Hawks
 
 As you can see the total distance traveled by Philadelphia 76ers with this calendar has increased.
 
@@ -383,7 +383,7 @@ cat("Original Calendar:\t",
 ```
 
     ## Original Calendar:    62,315.35
-    ## Random Calendar:  96,310.26
+    ## Random Calendar:  89,295.38
 
 Total distance traveled also has increased.
 
@@ -396,4 +396,26 @@ cat("Original Calendar:\t",
 ```
 
     ## Original Calendar:    2,148,009
-    ## Candidate Calendar:   3,196,763
+    ## Candidate Calendar:   3,128,813
+
+Would be able to create a new calendar a with low distance traveled?
+--------------------------------------------------------------------
+
+As I wrote in the begining of the post I believe it is hard to improve the original NBA calendar, but still we can try to create a new calendar with a resonable solution.
+
+Let's create 1,000 random calendars and check the distribution of the total distance traveled.
+
+``` r
+result<-rep(NA,1000)
+for(i in 1:length(result)){
+  c_<-calendar[sample(nrow(calendar),replace=FALSE),]
+  result[i]<-sum(sapply(teams,function(x) sum(nbaFlightsByTeam(c_,x,date=FALSE)$distance)))
+}
+
+ggplot(data.frame(result),aes(x=result))+
+  geom_histogram(fill="navy")+
+  theme_minimal()+xlab("Distance (Km)")+ylab("")+
+  geom_vline(xintercept = sum(sapply(teams,function(x) sum(nbaFlightsByTeam(calendar,x,date=TRUE)$distance))),colour="red",lty=2)
+```
+
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-21-1.png)

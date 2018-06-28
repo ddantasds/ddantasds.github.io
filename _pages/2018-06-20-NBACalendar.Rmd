@@ -301,7 +301,7 @@ As I wrote in the begining of the post I believe it is hard to improve the origi
 
 Let's create 1,000 random calendars and check the distribution of the total distance traveled.
 
-```{r, cache=TRUE, warning=FALSE, message=FALSE}
+```{r, cache= TRUE, warning=FALSE, message=FALSE}
 result<-rep(NA,1000)
 for(i in 1:length(result)){
   c_<-calendar[sample(nrow(calendar),replace=FALSE),]
