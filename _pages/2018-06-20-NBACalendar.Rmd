@@ -555,8 +555,8 @@ labs(y="Distance (km)")+
                            size=8, angle=45, hjust=1))
 ```
 
-In this scenario we would have Portland Trail Blazer with most distance traveled. It seems to be reasonable given the location of Portland.
+In this scenario we would have Portland Trail Blazer with the most distance traveled. It seems to be reasonable given the location of Portland.
 
 ## Discussion and Conclusion
 
-Trying to randomly find a suitable calendar for NBA regular seems to be almost an impossible mission. By using the idea of genetic algorithm we were able to create possible calendars that have a total distance traveled lower than real NBA calendars. One important limitation in this procedure is that we are not using any constraint. These calendars could easily be subject to some constraints such as maximum number of games away in a row or some special date games such as christmas and thanksgiving games. Applying these constraints would reduce the number of possible calendars and apparently would also make the process of finding a solution slower.
+Trying to randomly find a suitable calendar for NBA regular season seems to be almost an impossible mission. By using the idea of genetic algorithm we were able to create possible calendars that have a total distance traveled lower than real NBA calendars. One important limitation in this procedure is that we are not using any constraint. These calendars could easily be subject to some constraints such as maximum number of games away in a row or some special date games such as christmas and thanksgiving games. Applying these constraints would reduce the number of possible calendars and apparently would also make the process of finding a solution slower.
