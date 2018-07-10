@@ -12,7 +12,7 @@ excerpt: "NBA, Genetic Algorithm, Data Science"
 Overview
 ========
 
-TasAs you might know (or not), NBA is the men's professional basketball league in US. It contains 30 teams located around US and Canada (actually there is only one team in Canada) disputing the national title every year. If you have no idea about what I am saying maybe names such as Michael Jordan, Kobe Bryant, and Stephen Curry could help you. If still it does not sounds familiar this post probably will not be as delight as it is for me, but no problem we can still learn something from here.
+As you might know (or not), NBA is the men's professional basketball league in US. It contains 30 teams located around US and Canada (actually there is only one team in Canada) disputing the national title every year. If you have no idea about what I am saying maybe names such as Michael Jordan, Kobe Bryant, and Stephen Curry could help you. If still it does not sounds familiar this post probably will not be as delight as it is for me, but no problem we can still learn something from here.
 
 The tournament is divided in two phases. First, these 30 teams play against each other during what is called the regular season. In the end of the regular season the best 8 teams from each conference (East and West) advance to the Playoffs where they dispute to be the Champion.
 
