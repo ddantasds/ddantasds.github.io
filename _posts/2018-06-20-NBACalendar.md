@@ -3,11 +3,11 @@ title: "NBA Calendar"
 date: 2018-06-20
 tags: [.]
 header:
-  image: "/images/IMG_2046_1.JPG"
+  image: "//images/IMG_2046_1.JPG"
 excerpt: "NBA, Genetic Algorithm, Data Science"
 ---
 
-![](images/62-62559_nba_2017_2018_realbig_logo_collection_pdp.jpg)
+![](/images/62-62559_nba_2017_2018_realbig_logo_collection_pdp.jpg)
 
 Overview
 ========
@@ -299,7 +299,7 @@ options(repr.plot.width=20, repr.plot.height=16)
 nbaRouteMap(calendar,"Philadelphia 76ers")
 ```
 
-![](images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-13-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 The blue numbers on the map represent the order of the games. The concentration of number on the bottom right are the home games.
 
@@ -334,7 +334,7 @@ labs(y="Distance (km)")+
                            size=8, angle=45, hjust=1))
 ```
 
-![](images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-15-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-15-1.png)
 
 Interesting to see that both team that made NBA final are on the extrems. Coincidence?!? Yes, there is no correlation :P
 
@@ -419,7 +419,7 @@ ggplot(data.frame(result),aes(x=result))+
   geom_vline(xintercept = sum(sapply(teams,function(x) sum(nbaFlightsByTeam(calendar,x,date=TRUE)$distance))),colour="red",lty=2)
 ```
 
-![](images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-21-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-21-1.png)
 
 As we know the NBA Calendar has a total travel of 2,148,009 km (red dashed-line) and none of the 1,000 random calendars generate were closed to it. The minumum distance traveled generated from the 1,000 random calendars is greater than 3,000,000 Km. The original NBA calendar is really well optmized.
 
@@ -615,7 +615,7 @@ p95=map_dbl(lapply(
   geom_hline(yintercept = sum(sapply(teams,function(x) sum(nbaFlightsByTeam(calendar,x,date=FALSE)$distance))),colour="red",lty=2)
 ```
 
-![](images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-25-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-25-1.png)
 
 As we can see, after 200+ interactions we were able to generate a calendar with a lower distance than the 2016 calendar. The blue line represents the median of the 100 calendars and each yellow line represent 5% and 95% quantile of these 100 calendars.
 
@@ -644,7 +644,7 @@ It is actually more than the original calendar but it is not that different. It 
 nbaRouteMap(min_calendar,"Philadelphia 76ers")
 ```
 
-![](images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-29-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
 ``` r
 total_distance_by_team<-sapply(teams,function(x) sum(nbaFlightsByTeam(min_calendar,x,date = FALSE)$distance))
@@ -665,7 +665,7 @@ labs(y="Distance (km)")+
                            size=8, angle=45, hjust=1))
 ```
 
-![](images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-30-1.png)
+![](/images/2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-30-1.png)
 
 In this scenario we would have Portland Trail Blazer with most distance traveled. It seems to be reasonable given the location of Portland.
 
