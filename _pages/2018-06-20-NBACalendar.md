@@ -1,11 +1,8 @@
----
-title: "Untitled"
-output: github_document
----
+Untitled
+================
 
-
-
-# Overview
+Overview
+========
 
 As you might know (or not), NBA is the men's professional basketball league in US. It contains 30 teams located around US and Canada (actually there is only one team in Canada) disputing the national title every year. If you have no idea about what I am saying maybe names such as Michael Jordan, Kobe Bryant, and Stephen Curry could help you. If still it does not sounds familiar this post probably will not be as delight as it is for me, but no problem we can still learn something from here.
 
@@ -19,53 +16,50 @@ Said that, it is plausible to claim that NBA already have an optmized regular se
 
 My point here is to explore the concept of Genetic Algorithm to create an efficient NBA calendar. Let's see!!!
 
+Load Necessary Functions
+========================
 
-```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
-
-library(RCurl)
-library(XML)
-library(ggmap)
-library(dplyr)
-library(lubridate)
-library(ggrepel)
-library(reshape2)
-library(ggridges)
-library(tibble)
-library(purrr)
-```
-
-
-# Load Necessary Functions
-* **collectNBACalendar**: Function to download NBA calendar for a specific year.
-* **earth.dist**: Given a pair of latitude and longitude calculate the distance between them.
-* **nbaFlightsByTeam**: Returns a data frame with flights and the distance for a specific team during the season.
+-   **collectNBACalendar**: Function to download NBA calendar for a specific year.
+-   **earth.dist**: Given a pair of latitude and longitude calculate the distance between them.
+-   **nbaFlightsByTeam**: Returns a data frame with flights and the distance for a specific team during the season.
 
 These functions were created from scratch to ease the porcess to manipulate data. More information about these functions can be found at [my github account](https://github.com/ddantasds/Data-Science-Projects/blob/master/NBA%20calendar/NBA%20season%20calendar%20Functions.R).
 
-```{r, message=FALSE}
+``` r
 source('~/project/Data-Science-Projects/NBA calendar/NBA season calendar Functions.R')
 ```
 
-# Data
+Data
+====
 
-## Scrapping data from internet
+Scrapping data from internet
+----------------------------
 
 The data used are not in a well structured data frame. It was necessary to extract the calendar from internet. The function calendar is used to extract the nba calendar for an specific season.
 
 Collecting the calendar from [](https://www.basketball-reference.com).
 
-```{r}
+``` r
 calendar<-collectNBACalendar(2016)
 
 knitr::kable(head(calendar))
 ```
 
-## Create date format variable
+| date             | time     | visitor            | visitor\_pts | home               | home\_pts |  season|
+|:-----------------|:---------|:-------------------|:-------------|:-------------------|:----------|-------:|
+| Fri, Jan 1, 2016 | 8:00 pm  | New York Knicks    | 81           | Chicago Bulls      | 108       |    2016|
+| Fri, Jan 1, 2016 | 10:30 pm | Philadelphia 76ers | 84           | Los Angeles Lakers | 93        |    2016|
+| Fri, Jan 1, 2016 | 7:30 pm  | Dallas Mavericks   | 82           | Miami Heat         | 106       |    2016|
+| Fri, Jan 1, 2016 | 7:30 pm  | Charlotte Hornets  | 94           | Toronto Raptors    | 104       |    2016|
+| Fri, Jan 1, 2016 | 7:00 pm  | Orlando Magic      | 91           | Washington Wizards | 103       |    2016|
+| Sat, Jan 2, 2016 | 3:00 pm  | Brooklyn Nets      | 100          | Boston Celtics     | 97        |    2016|
 
-Fri, Jan 1, 2016 -> 01-01-2016
+Create date format variable
+---------------------------
 
-```{r}
+Fri, Jan 1, 2016 -&gt; 01-01-2016
+
+``` r
 calendar$date2<-unlist(lapply(strsplit(gsub(",","",calendar$date)," "),function(x) paste(x[2:4],collapse = "-")))
 calendar$date2<-as.Date(calendar$date2,"%b-%d-%Y")
 calendar<-calendar%>%
@@ -79,22 +73,29 @@ calendar%>%
     summarise(min=min(date2),max=max(date2))
 ```
 
-## Filtering Regular Season Games
+    ## # A tibble: 1 x 2
+    ##   min        max       
+    ##   <date>     <date>    
+    ## 1 2015-10-27 2016-06-19
+
+Filtering Regular Season Games
+------------------------------
 
 This calendar contains playoffs games and as I said before we are only interested on regular season games. Therefore, we have to filter the season games.
 
 The 2015-16 season ranged from 10-27-2015 to 04-13-2016 [](https://en.wikipedia.org/wiki/2015%E2%80%9316_NBA_season)
 
-```{r}
+``` r
 calendar<-calendar%>%
             filter(date2<='2016-04-13')
 ```
 
-## Checking
+Checking
+--------
 
 Checking if every time has 82 games.
 
-```{r}
+``` r
 # Quick check: Every team must have 82 games
 print(sapply(unique(calendar$home),
        function(x) calendar%>%
@@ -102,13 +103,35 @@ print(sapply(unique(calendar$home),
   nrow()))
 ```
 
-## Define Game Location
+    ##          Atlanta Hawks          Chicago Bulls  Golden State Warriors 
+    ##                     82                     82                     82 
+    ##         Boston Celtics          Brooklyn Nets        Detroit Pistons 
+    ##                     82                     82                     82 
+    ##        Houston Rockets     Los Angeles Lakers      Memphis Grizzlies 
+    ##                     82                     82                     82 
+    ##             Miami Heat        Milwaukee Bucks  Oklahoma City Thunder 
+    ##                     82                     82                     82 
+    ##          Orlando Magic           Phoenix Suns Portland Trail Blazers 
+    ##                     82                     82                     82 
+    ##       Sacramento Kings        Toronto Raptors         Indiana Pacers 
+    ##                     82                     82                     82 
+    ##   Los Angeles Clippers        New York Knicks    Cleveland Cavaliers 
+    ##                     82                     82                     82 
+    ##         Denver Nuggets     Philadelphia 76ers      San Antonio Spurs 
+    ##                     82                     82                     82 
+    ##   New Orleans Pelicans     Washington Wizards      Charlotte Hornets 
+    ##                     82                     82                     82 
+    ## Minnesota Timberwolves       Dallas Mavericks              Utah Jazz 
+    ##                     82                     82                     82
+
+Define Game Location
+--------------------
 
 Based on the name of the home team we can identify the game location. For example, when the home team is 'Chicago Bulls' we know the game was hosted in Chicago.
 
 In a simple example, for a match between 'Chicago Bulls' and 'Memphis Grizzles' where the home team is 'Chicago Bulls' we assume that there was travel from Memphis to Chicago.
 
-```{r}
+``` r
 # Home Location
 calendar$home_location<-unlist(
   lapply(strsplit(calendar$home," "),
@@ -128,10 +151,10 @@ Even though the code above was able to identify the games location we still had 
 
 For example:
 
-* Golden State -> San Franciso (The team name does not contain the city' name)
-* Minnesota -> Minneapolis (The team name contains the state not the city name)
+-   Golden State -&gt; San Franciso (The team name does not contain the city' name)
+-   Minnesota -&gt; Minneapolis (The team name contains the state not the city name)
 
-```{r}
+``` r
 calendar$home_location[calendar$home_location=="Portland Trail"]<-"Portland"
 calendar$home_location[calendar$home_location=="Utah"]<-"Salt Lake City"
 calendar$home_location[calendar$home_location=="Indiana"]<-"Indianapolis"
@@ -140,18 +163,22 @@ calendar$home_location[calendar$home_location=="Golden State"]<-"Oakland"
 calendar$home_location[calendar$home_location=="Washington"]<-"Washington D.C."
 ```
 
-## Latitude and Longitude for the Cities where the Teams are located
+Latitude and Longitude for the Cities where the Teams are located
+-----------------------------------------------------------------
 
 Using the **geocode** function from **ggmap** package it is possible to download the latitude and longitude based on the city name.
 
-```{r, message=FALSE, warning=FALSE}
+``` r
 #Example for Denver
 geocode('Denver')
 ```
 
+    ##         lon      lat
+    ## 1 -104.9903 39.73924
+
 Download for every team the latitude and longitude.
 
-```{r, message=FALSE, warning=FALSE, cache=TRUE}
+``` r
 cities<-unique(calendar$home_location)
 pos<-geocode(cities)
 citiesLocation<-data.frame(cities,pos)
@@ -163,11 +190,21 @@ while(length(which(is.na(citiesLocation$lon)))>0){
 knitr::kable(head(citiesLocation))
 ```
 
-## Calculate the Distance between Teams
+| cities   |         lon|       lat|
+|:---------|-----------:|---------:|
+| Atlanta  |   -84.38798|  33.74900|
+| Chicago  |   -87.62980|  41.87811|
+| Oakland  |  -122.27111|  37.80436|
+| Boston   |   -71.05888|  42.36008|
+| Brooklyn |   -73.94416|  40.67818|
+| Detroit  |   -83.04575|  42.33143|
+
+Calculate the Distance between Teams
+------------------------------------
 
 The distance between any two cities is calculated by using its locations (latitude and longitude).
 
-```{r}
+``` r
 # Every combination between two teams
 distance<-expand.grid(unique(calendar$home_location),unique(calendar$home_location))
 names(distance)<-c("team1","team2")
@@ -190,9 +227,18 @@ names(distance)[5:6]<-c("lon2","lat2")
 knitr::kable(head(distance))
 ```
 
+| team2   | team1      |        lon1|      lat1|       lon2|    lat2|
+|:--------|:-----------|-----------:|---------:|----------:|-------:|
+| Atlanta | Atlanta    |   -84.38798|  33.74900|  -84.38798|  33.749|
+| Atlanta | New York   |   -74.00597|  40.71278|  -84.38798|  33.749|
+| Atlanta | Denver     |  -104.99025|  39.73924|  -84.38798|  33.749|
+| Atlanta | Sacramento |  -121.49440|  38.58157|  -84.38798|  33.749|
+| Atlanta | Phoenix    |  -112.07404|  33.44838|  -84.38798|  33.749|
+| Atlanta | Milwaukee  |   -87.90647|  43.03890|  -84.38798|  33.749|
+
 Calculate the distance (km) between two cities using the function **earth.dist**.
 
-```{r}
+``` r
 distance$distance<-apply(
   distance[,names(distance)%in%c('lon1','lat1','lon2','lat2')],
   1,
@@ -202,15 +248,34 @@ distance$distance<-apply(
 knitr::kable(head(distance))
 ```
 
-## Function to calculate Distance traveled by a Team during the season
+| team2   | team1      |        lon1|      lat1|       lon2|    lat2|  distance|
+|:--------|:-----------|-----------:|---------:|----------:|-------:|---------:|
+| Atlanta | Atlanta    |   -84.38798|  33.74900|  -84.38798|  33.749|     0.000|
+| Atlanta | New York   |   -74.00597|  40.71278|  -84.38798|  33.749|  1201.662|
+| Atlanta | Denver     |  -104.99025|  39.73924|  -84.38798|  33.749|  1949.539|
+| Atlanta | Sacramento |  -121.49440|  38.58157|  -84.38798|  33.749|  3354.758|
+| Atlanta | Phoenix    |  -112.07404|  33.44838|  -84.38798|  33.749|  2559.549|
+| Atlanta | Milwaukee  |   -87.90647|  43.03890|  -84.38798|  33.749|  1078.468|
+
+Function to calculate Distance traveled by a Team during the season
+-------------------------------------------------------------------
 
 The **nbaFlightsByTeam** function returns a data frame with the flights and the distance for a specific team during the season.
 
 For example for the **Philadelphia 76ers**
-```{r}
+
+``` r
 PHI_flights<-nbaFlightsByTeam(calendar,"Philadelphia 76ers",date=TRUE)
 head(PHI_flights)
 ```
+
+    ##    flight_from    flight_to  distance
+    ## 1 Philadelphia       Boston  436.1181
+    ## 2       Boston Philadelphia  436.1181
+    ## 3 Philadelphia Philadelphia    0.0000
+    ## 4 Philadelphia    Milwaukee 1115.2003
+    ## 5    Milwaukee    Cleveland  539.5069
+    ## 6    Cleveland Philadelphia  576.9254
 
 The first 6 games of the 2016 season for the Phildelphia 76ers are:
 
@@ -218,24 +283,30 @@ The first 6 games of the 2016 season for the Phildelphia 76ers are:
 
 The Phildelphia 76ers plays its first game at Boston and goes back home to play the next two games. Then they fly to Milwaukee and after that they go to Cleveland before coming back home for another game.
 
-## Philadelphia 76ers Travel Map
+Philadelphia 76ers Travel Map
+-----------------------------
 
-```{r, message=FALSE, warning=FALSE}
+``` r
 options(repr.plot.width=20, repr.plot.height=16)
 nbaRouteMap(calendar,"Philadelphia 76ers")
 ```
+
+![](2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-13-1.png)
 
 The blue numbers on the map represent the order of the games. The concentration of number on the bottom right are the home games.
 
 To get the total kilometers traveled by the **Philadelphia 76ers** during the 2015-16 regular season we just have to sum the variable distance.
 
-```{r}
+``` r
 cat(format(sum(PHI_flights$distance),big.mark=",",scientific=FALSE),"km")
 ```
 
-## Total distance traveled by team during 2015-16 season
+    ## 62,315.35 km
 
-```{r}
+Total distance traveled by team during 2015-16 season
+-----------------------------------------------------
+
+``` r
 teams<-unique(calendar$home)
 total_distance_by_team<-sapply(teams,function(x) sum(nbaFlightsByTeam(calendar,x)$distance))
 
@@ -255,44 +326,61 @@ labs(y="Distance (km)")+
                            size=8, angle=45, hjust=1))
 ```
 
+![](2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-15-1.png)
+
 Interesting to see that both team that made NBA final are on the extrems. Coincidence?!? Yes, there is no correlation :P
 
-## Total distance traveled
+Total distance traveled
+-----------------------
 
 If we sum the distance traveled by every team we have the total distance traveled during the season.
 
-```{r}
+``` r
 cat(format(sum(total_distance_by_team$distance),big.mark=",",scientific=FALSE),"km")
 ```
 
-## Propose a new calendar
+    ## 2,148,009 km
+
+Propose a new calendar
+----------------------
 
 If we shuffle the orders of the lines from the original calendar we can create a new calendar.
 
-```{r, cache=TRUE}
+``` r
 randomCalendar <- calendar[sample(nrow(calendar),replace=FALSE),]
 ```
 
 Now, the first 10 games for Philadelphia 76ers using this new calendar would be:
 
-```{r}
+``` r
 randomCalendar%>%
 select(home,visitor)%>%
 filter(home=="Philadelphia 76ers" | visitor=="Philadelphia 76ers")%>%
 head()
 ```
 
+    ##                   home            visitor
+    ## 1 New Orleans Pelicans Philadelphia 76ers
+    ## 2   Philadelphia 76ers    Detroit Pistons
+    ## 3      Milwaukee Bucks Philadelphia 76ers
+    ## 4        Chicago Bulls Philadelphia 76ers
+    ## 5   Philadelphia 76ers Washington Wizards
+    ## 6   Philadelphia 76ers     Indiana Pacers
+
 As you can see the total distance traveled by Philadelphia 76ers with this calendar has increased.
 
-```{r}
+``` r
 cat("Original Calendar:\t",
     format(sum(nbaFlightsByTeam(calendar,"Philadelphia 76ers",date=FALSE)$distance),big.mark=",",scientific=FALSE),
     "\nRandom Calendar:\t",format(sum(nbaFlightsByTeam(randomCalendar,"Philadelphia 76ers",date=FALSE)$distance),big.mark=",",scientific=FALSE))
 ```
 
+    ## Original Calendar:    62,315.35 
+    ## Random Calendar:  101,729.5
+
 Total distance traveled also has increased.
 
-```{r}
+``` r
 cat("Original Calendar:\t",
     format(sum(sapply(teams,function(x) sum(nbaFlightsByTeam(calendar,x,date=FALSE)$distance))),big.mark=",",scientific=FALSE),
         "\nCandidate Calendar:\t",
@@ -300,13 +388,17 @@ cat("Original Calendar:\t",
             )
 ```
 
-## How easy is to create a new calendar a with low distance traveled?
+    ## Original Calendar:    2,148,009 
+    ## Candidate Calendar:   3,178,847
+
+How easy is to create a new calendar a with low distance traveled?
+------------------------------------------------------------------
 
 As I wrote in the begining of the post I believe it is hard to improve the original NBA calendar, but still we can try to create a new calendar with a resonable solution.
 
 Let's create 1,000 random calendars and check the distribution of the total distance traveled.
 
-```{r, cache=TRUE, warning=FALSE, message=FALSE}
+``` r
 result<-rep(NA,1000)
 for(i in 1:length(result)){
   c_<-calendar[sample(nrow(calendar),replace=FALSE),]
@@ -319,26 +411,29 @@ ggplot(data.frame(result),aes(x=result))+
   geom_vline(xintercept = sum(sapply(teams,function(x) sum(nbaFlightsByTeam(calendar,x,date=TRUE)$distance))),colour="red",lty=2)
 ```
 
+![](2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-21-1.png)
+
 As we know the NBA Calendar has a total travel of 2,148,009 km (red dashed-line) and none of the 1,000 random calendars generate were closed to it. The minumum distance traveled generated from the 1,000 random calendars is greater than 3,000,000 Km. The original NBA calendar is really well optmized.
 
 For this problem is possible to create **1230!** different sequence of games. It is unfeasible to mannualy find a reasonable calendar by just generating a random sequence of games. The solution is to work with *Genetic Algorithm* to converge to an acceptable calendar.
 
-## Genetic Algorithm
+Genetic Algorithm
+-----------------
 
-There is no right answer for this problem. We are not looking for the best calendar, but one that might be a adequate. In this case we are looking for a calendar with a low distance traveled during the season. 
+There is no right answer for this problem. We are not looking for the best calendar, but one that might be a adequate. In this case we are looking for a calendar with a low distance traveled during the season.
 
-This is an heuristic problem and can be solved by using the method so-called **genetic algorithm** (GA). The idea of this algorithm is pretty inspired by biological evolution (mutation, crossover and selection), that's why the name **genetic algorithm**. 
+This is an heuristic problem and can be solved by using the method so-called **genetic algorithm** (GA). The idea of this algorithm is pretty inspired by biological evolution (mutation, crossover and selection), that's why the name **genetic algorithm**.
 
 In a simple explanation, biological evolution are organisms reproducing and generating changes with each generation. In our case, organisms are the calendars and the evolution are a new calendars with changes generated from its 'parents' (previous calendars).
 
-## How it works?
+How it works?
+-------------
 
 If we have as initial calendar the random one we generated with a total distance traveled of **3,157,882 km**. As we know that's not a good calendar. The idea is to generated a new calendar from this one that could reduce this distance. One method to create this new calendar is randomly change some positions and check if it dereceased the total distance traveled. That's the ideo of creating a new generation based on the previous one.
 
 Let's create 4 generations from our random calendar as first generation. In this process we proposed 10 random positions changes from this calendar and see the result.
 
-```{r cache= TRUE, warning=FALSE, message=FALSE}
-
+``` r
 random_distance<-sum(sapply(teams,function(x) sum(nbaFlightsByTeam(randomCalendar,x,date=FALSE)$distance)))
 
 aux1<-randomCalendar
@@ -373,21 +468,27 @@ cat("Distance First Generation Calendar:\t",
     )
 ```
 
+    ## Distance First Generation Calendar:   3,152,361 
+    ## Distance Second Generation Calendar:  3,129,660 
+    ## Distance Third Generation Calendar:   3,124,903 
+    ## Distance Fourth Generation Calendar:  3,113,575
+
 In this simple example, each generation produced a lower total traveled distance calendar than its previous generation. If we keep running this procedure for further generations we could create a calendar with a similar distance from the original NBA calendar.
 
 How to do it:
 
-- Create 100 intial random calendars. It was created 100 so we can have more options.
+-   Create 100 intial random calendars. It was created 100 so we can have more options.
 
-- For each of the 100 calendars we create another calendar with a better result (lower total traveled distance) by changing positions. In this case we proposed initially 10 changes.
+-   For each of the 100 calendars we create another calendar with a better result (lower total traveled distance) by changing positions. In this case we proposed initially 10 changes.
 
-- From these 100 new calendars we select the top 60 with lower distance and randomly select 40 others (It will probably result in repeated calendars). This will select the best calendar and also randomly give a chance for others to present a better result in future generations.
+-   From these 100 new calendars we select the top 60 with lower distance and randomly select 40 others (It will probably result in repeated calendars). This will select the best calendar and also randomly give a chance for others to present a better result in future generations.
 
-- With these set of 100 calendars we repeat the whole process until we get a resonable result. In our case let's use the total distance traveled in 2016 as reference (**2,148,009 km**).
+-   With these set of 100 calendars we repeat the whole process until we get a resonable result. In our case let's use the total distance traveled in 2016 as reference (**2,148,009 km**).
 
-## Running the Genetic Algorithm from scratch
+Running the Genetic Algorithm from scratch
+------------------------------------------
 
-```{r, eval=FALSE}
+``` r
 n_calendars<-100
 #list_calendars<-list()
 initial_n_changes<-2
@@ -475,15 +576,10 @@ for(k in 1:n_interactions){
 }
 ```
 
-## Taking the results
+Taking the results
+------------------
 
-```{r, include=FALSE}
-load("~/project/Data-Science-Projects/NBA calendar/list_distance.RData")
-```
-
-
-
-```{r, warning=FALSE, message=FALSE}
+``` r
 df<-as_tibble(
   do.call(cbind, lapply(list_distance,function(x) unlist(x)))
 )
@@ -511,32 +607,38 @@ p95=map_dbl(lapply(
   geom_hline(yintercept = sum(sapply(teams,function(x) sum(nbaFlightsByTeam(calendar,x,date=FALSE)$distance))),colour="red",lty=2)
 ```
 
+![](2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-25-1.png)
+
 As we can see, after 200+ interactions we were able to generate a calendar with a lower distance than the 2016 calendar. The blue line represents the median of the 100 calendars and each yellow line represent 5% and 95% quantile of these 100 calendars.
 
-```{r, include=FALSE}
-min_calendar<-read.csv("/home/ddantas/project/Data-Science-Projects/NBA calendar/output_calendar.csv")
-```
-
 The minimum distance traveled would be:
-```{r}
+
+``` r
 cat(format(sum(sapply(teams,function(x) sum(nbaFlightsByTeam(min_calendar,x,date = FALSE)$distance))),big.mark=",",scientific=FALSE),"km")
 ```
 
+    ## 2,112,450 km
+
 The total distance is obviously lower than the 2016 calendar. For this same calendar, the Philadelphia 76ers would travel:
-```{r}
+
+``` r
 cat("Original Calendar:\t",
     format(sum(nbaFlightsByTeam(calendar,"Philadelphia 76ers",date=FALSE)$distance),big.mark=",",scientific=FALSE),
     "\nNew Calendar:\t",format(sum(nbaFlightsByTeam(min_calendar,"Philadelphia 76ers",date=FALSE)$distance),big.mark=",",scientific=FALSE))
 ```
 
+    ## Original Calendar:    62,315.35 
+    ## New Calendar:     67,528.54
+
 It is actually more than the original calendar but it is not that different. It resulted in this map:
 
-```{r, warning=FALSE, message=FALSE}
+``` r
 nbaRouteMap(min_calendar,"Philadelphia 76ers")
 ```
 
+![](2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-29-1.png)
 
-```{r}
+``` r
 total_distance_by_team<-sapply(teams,function(x) sum(nbaFlightsByTeam(min_calendar,x,date = FALSE)$distance))
 
 total_distance_by_team<-as.data.frame(total_distance_by_team[order(total_distance_by_team,decreasing=TRUE)])
@@ -555,8 +657,11 @@ labs(y="Distance (km)")+
                            size=8, angle=45, hjust=1))
 ```
 
+![](2018-06-20-NBACalendar_files/figure-markdown_github/unnamed-chunk-30-1.png)
+
 In this scenario we would have Portland Trail Blazer with most distance traveled. It seems to be reasonable given the location of Portland.
 
-## Discussion and Conclusion
+Discussion and Conclusion
+-------------------------
 
 Trying to randomly find a suitable calendar for NBA regular seems to be almost an impossible mission. By using the idea of genetic algorithm we were able to create possible calendars that have a total distance traveled lower than real NBA calendars. One important limitation in this procedure is that we are not using any constraint. These calendars could easily be subject to some constraints such as maximum number of games away in a row or some special date games such as christmas and thanksgiving games. Applying these constraints would reduce the number of possible calendars and apparently would also make the process of finding a solution slower.

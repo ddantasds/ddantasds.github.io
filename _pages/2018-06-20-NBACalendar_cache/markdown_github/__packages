@@ -1,10 +1,4 @@
 base
-methods
-datasets
-utils
-grDevices
-graphics
-stats
 bitops
 RCurl
 XML
@@ -16,3 +10,7 @@ ggrepel
 xml2
 rvest
 bindrcpp
+reshape2
+ggridges
+tibble
+purrr
